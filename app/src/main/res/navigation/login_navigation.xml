@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login_navigation"
+    app:startDestination="@id/login_frag">
+
+    <fragment
+        android:id="@+id/login_frag"
+        android:name="com.sc.card.presenter.fragment.LoginFragment"
+        android:label="@string/title_login">
+        <action
+            android:id="@+id/nav_login_to_register"
+            app:destination="@id/register_frag"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/register_frag"
+        android:name="com.sc.card.presenter.fragment.RegisterFragment"
+        android:label="@string/title_register"/>
+</navigation>
