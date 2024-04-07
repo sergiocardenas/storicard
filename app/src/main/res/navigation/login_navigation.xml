@@ -16,5 +16,14 @@
     <fragment
         android:id="@+id/register_frag"
         android:name="com.sc.card.presenter.fragment.RegisterFragment"
+        android:label="@string/title_register">
+        <action
+            android:id="@+id/nav_register_to_camera"
+            app:destination="@id/camera_frag"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/camera_frag"
+        android:name="com.sc.card.presenter.fragment.CameraFragment"
         android:label="@string/title_register"/>
 </navigation>

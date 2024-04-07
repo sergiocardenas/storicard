@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.sc.card.presenter.screen.LoginScreen
+import com.sc.card.R
+import com.sc.card.presenter.activity.LoginActivity
 import com.sc.card.presenter.screen.RegisterScreen
 import com.sc.card.presenter.state.UserState
-import com.sc.card.presenter.viewModel.LoginViewModel
 import com.sc.card.presenter.viewModel.RegisterViewModel
 
 class RegisterFragment: Fragment() {
@@ -32,7 +32,9 @@ class RegisterFragment: Fragment() {
             RegisterScreen(
                 viewModel = registerViewModel,
                 onRegisterClick = ::onRegisterClick,
-                onTakePhotoClick = { },
+                onTakePhotoClick = {
+                    goToCamera()
+                },
                 onSuccessClick = ::onRegisterSuccessClick
                 )
         }
@@ -53,5 +55,9 @@ class RegisterFragment: Fragment() {
 
     private fun onRegisterSuccessClick(){
         requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    private fun goToCamera(){
+        (activity as LoginActivity).navigate(R.id.nav_register_to_camera)
     }
 }

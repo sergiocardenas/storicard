@@ -10,8 +10,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
-
-    private lateinit var binding: LoginLayoutBinding
+    private val binding by lazy {
+        LoginLayoutBinding.inflate(layoutInflater)
+    }
     private val navController by lazy {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.login_nav_host_fragment)
                 as NavHostFragment
@@ -21,9 +22,10 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = LoginLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
+
+
 
     fun navigate(destination: Int){
         navController.navigate(destination)
