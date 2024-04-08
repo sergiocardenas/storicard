@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.sc.card.databinding.CameraFragmentLayoutBinding
 import com.sc.card.presenter.viewModel.CameraViewModel
+import com.sc.card.presenter.viewModel.RegisterViewModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -22,6 +23,10 @@ private const val TAG = "CameraFragment"
 class CameraFragment: Fragment() {
     private val cameraViewModel by lazy {
         ViewModelProvider(this)[CameraViewModel::class.java]
+    }
+
+    private val registerViewModel by lazy {
+        ViewModelProvider(requireActivity())[RegisterViewModel::class.java]
     }
 
     private val binding by lazy {
@@ -59,8 +64,11 @@ class CameraFragment: Fragment() {
         binding.takePhotoButton.setOnClickListener {
             cameraViewModel.takePhoto(
                 requireActivity(),
-                imageCapture
-            )
+                imageCapture,
+                ::onCapturePhoto
+            ) { exception ->
+                Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
+            }
         }
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
@@ -105,4 +113,11 @@ class CameraFragment: Fragment() {
         }, ContextCompat.getMainExecutor(requireActivity()))
     }
 
+    private fun onCapturePhoto(image64: String){
+        val msg = "Photo capture succeeded"
+        Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show()
+        Log.d(TAG, msg)
+        registerViewModel.setUserPhoto(image64)
+        requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
 }

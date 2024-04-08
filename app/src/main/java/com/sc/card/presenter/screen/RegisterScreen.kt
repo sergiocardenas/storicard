@@ -1,11 +1,13 @@
 package com.sc.card.presenter.screen
 
+import android.graphics.Bitmap
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,14 +31,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sc.card.R
+import com.sc.card.presenter.extension.validateEmail
 import com.sc.card.presenter.state.UserState
 import com.sc.card.presenter.viewModel.RegisterViewModel
 import com.sc.card.ui.theme.CardTheme
@@ -47,7 +55,7 @@ import kotlinx.coroutines.launch
 fun RegisterScreen(
     viewModel: RegisterViewModel,
     onRegisterClick: (user: UserState) -> Unit,
-    onTakePhotoClick: () -> Unit,
+    onTakePhotoClick: (user: UserState) -> Unit,
     onSuccessClick: () -> Unit,
 ){
     val success = viewModel.success.collectAsState()
@@ -55,7 +63,7 @@ fun RegisterScreen(
     if(success.value){
         RegisterSuccessScreen(onSuccessClick)
     }else{
-        RegisterDataScreen(onRegisterClick, onTakePhotoClick)
+        RegisterDataScreen(viewModel,onRegisterClick, onTakePhotoClick)
     }
 }
 
@@ -73,6 +81,7 @@ fun RegisterSuccessScreen(
     ) {
         Text(
             text = "Your data have been register successfully",
+            textAlign = TextAlign.Center,
             fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -101,19 +110,31 @@ fun RegisterSuccessScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterDataScreen(
+    viewModel: RegisterViewModel,
     onRegisterClick: (user: UserState) -> Unit,
-    onTakePhotoClick: () -> Unit,
+    onTakePhotoClick: (user: UserState) -> Unit,
 ) {
-    var email by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val photoString = viewModel.photo.collectAsState()
+    var photoBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    var email by remember { mutableStateOf(viewModel.userData.value.email) }
+    var name by remember { mutableStateOf(viewModel.userData.value.name) }
+    var lastName by remember { mutableStateOf(viewModel.userData.value.lastName) }
+    var password by remember { mutableStateOf(viewModel.userData.value.password) }
+
+    fun getCurrentUser() = UserState(
+        email = email,
+        name = name,
+        lastName = lastName,
+        password = password,
+    )
 
     // Animation states
     var isEmailShaking by remember { mutableStateOf(false) }
     var isNameShaking by remember { mutableStateOf(false) }
     var isLastNameShaking by remember { mutableStateOf(false) }
     var isPasswordShaking by remember { mutableStateOf(false) }
+    var isPhotoShaking by remember { mutableStateOf(false) }
     val infiniteTransition = rememberInfiniteTransition()
 
     val shakeOffset by infiniteTransition.animateFloat(
@@ -124,6 +145,16 @@ fun RegisterDataScreen(
             repeatMode = RepeatMode.Reverse
         )
     )
+
+    LaunchedEffect(photoString) {
+        launch {
+            photoBitmap = if(photoString.value.isNotEmpty()){
+                viewModel.photoBitmap.value
+            }else{
+                null
+            }
+        }
+    }
 
     LaunchedEffect(isEmailShaking) {
         launch {
@@ -147,6 +178,12 @@ fun RegisterDataScreen(
         launch {
             delay(500)
             isPasswordShaking = false
+        }
+    }
+    LaunchedEffect(isPhotoShaking) {
+        launch {
+            delay(500)
+            isPhotoShaking = false
         }
     }
 
@@ -204,12 +241,42 @@ fun RegisterDataScreen(
                 .fillMaxWidth(),
         )
 
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if(photoString.value.isNotEmpty()){
+            photoBitmap?.let {bitmap ->
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .offset(x = if (isPhotoShaking) shakeOffset.dp else 0.dp)
+                        .width(60.dp)
+                        .height(60.dp)
+                )
+            }
+        }else{
+            Image(
+                painterResource(R.drawable.ic_launcher_background),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .offset(x = if (isPhotoShaking) shakeOffset.dp else 0.dp)
+                    .width(60.dp)
+                    .height(60.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = onTakePhotoClick,
-            colors =  ButtonDefaults.buttonColors(colorResource(id = R.color.purple_700)),
+            onClick = {
+                onTakePhotoClick(getCurrentUser())
+            },
+            colors =  ButtonDefaults.buttonColors(colorResource(id = R.color.purple_500)),
             modifier = Modifier
+                .offset(x = if (isPhotoShaking) shakeOffset.dp else 0.dp)
                 .height(60.dp)
                 .fillMaxWidth(),
         ) {
@@ -227,19 +294,15 @@ fun RegisterDataScreen(
         Button(
             onClick =
             {
-                isEmailShaking = email.isEmpty()
+                isEmailShaking = email.isEmpty() && !email.validateEmail()
                 isNameShaking = name.isEmpty()
                 isLastNameShaking = lastName.isEmpty()
                 isPasswordShaking = password.isEmpty()
-                val user = UserState(
-                    email = email,
-                    name = email,
-                    lastName = lastName,
-                    password = password,
-                )
-                onRegisterClick(user)
+                isPhotoShaking = photoString.value.isEmpty()
+
+                onRegisterClick(getCurrentUser())
             },
-            colors =  ButtonDefaults.buttonColors(colorResource(id = R.color.purple_500)),
+            colors =  ButtonDefaults.buttonColors(colorResource(id = R.color.purple_700)),
             modifier = Modifier
                 .height(60.dp)
                 .fillMaxWidth(),
@@ -260,6 +323,6 @@ fun RegisterDataScreen(
 @Composable
 fun RegisterPreview() {
     CardTheme {
-        RegisterDataScreen({ }, { })
+        RegisterDataScreen(RegisterViewModel(),{ }, { })
     }
 }
