@@ -7,11 +7,13 @@ import com.google.firebase.database.ValueEventListener
 import com.sc.card.data.entity.UserEntity
 import com.sc.card.presenter.extension.emailToKey
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+private const val LOGIN_TIMEOUT = 7000L
 class RemoteDataSourceImp @Inject constructor(
     database: FirebaseDatabase
 ): RemoteDataSource {
@@ -27,11 +29,12 @@ class RemoteDataSourceImp @Inject constructor(
     }
 
     override suspend fun login(user: UserEntity, callback: (UserEntity) -> Unit) {
-
         withContext(Dispatchers.IO){
+            var snapshotSuccess = false
             userModule.addListenerForSingleValueEvent(
                 object : ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        snapshotSuccess = true
                         if(snapshot.hasChild(user.email.emailToKey())){
                             val password = snapshot.child(user.email.emailToKey())
                                 .child("password").getValue(String::class.java)
@@ -67,7 +70,10 @@ class RemoteDataSourceImp @Inject constructor(
                     }
                 }
             )
-
+            delay(LOGIN_TIMEOUT)
+            if(!snapshotSuccess){
+                callback(UserEntity())
+            }
         }
     }
 
