@@ -323,6 +323,6 @@ fun RegisterDataScreen(
 @Composable
 fun RegisterPreview() {
     CardTheme {
-        RegisterDataScreen(RegisterViewModel(),{ }, { })
+        RegisterDataScreen(RegisterViewModel(null),{ }, { })
     }
 }

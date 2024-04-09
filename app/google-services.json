@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "267443804373",
+    "firebase_url": "https://cards-8247b-default-rtdb.firebaseio.com",
+    "project_id": "cards-8247b",
+    "storage_bucket": "cards-8247b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267443804373:android:b8e32941734010437e6a5c",
+        "android_client_info": {
+          "package_name": "com.sc.card"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJ69jdeXdeZ13Va1OLYoZ8hWJZv8pSUjE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

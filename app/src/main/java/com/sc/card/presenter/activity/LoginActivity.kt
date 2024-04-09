@@ -3,6 +3,10 @@ package com.sc.card.presenter.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.sc.card.R
 import com.sc.card.databinding.LoginLayoutBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,8 +28,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
     }
-
-
 
     fun navigate(destination: Int){
         navController.navigate(destination)

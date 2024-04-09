@@ -1,7 +1,6 @@
 package com.sc.card.presenter.viewModel
 
 import android.Manifest
-import android.R.attr.bitmap
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager

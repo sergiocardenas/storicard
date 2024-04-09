@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sc.card.domain.usecase.RegisterUseCase
+import com.sc.card.presenter.extension.toUserModel
 import com.sc.card.presenter.state.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
+    private val useCase: RegisterUseCase?
 ): ViewModel() {
 
     private var _userData = MutableStateFlow(UserState())
@@ -34,7 +37,12 @@ class RegisterViewModel @Inject constructor(
             photo = _photoString.value
         )
         viewModelScope.launch {
-            _success.value = true
+            useCase?.let {
+                it.registerUser(user.toUserModel()).collect{result ->
+                    _success.value = result
+                }
+            }
+
         }
     }
 

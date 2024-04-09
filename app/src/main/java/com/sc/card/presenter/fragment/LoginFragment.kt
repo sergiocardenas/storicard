@@ -8,10 +8,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.sc.card.R
-import com.sc.card.presenter.viewModel.LoginViewModel
 import com.sc.card.presenter.activity.LoginActivity
 import com.sc.card.presenter.screen.LoginScreen
+import com.sc.card.presenter.viewModel.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment: Fragment() {
 
     private val loginViewModel by lazy {
@@ -24,12 +26,32 @@ class LoginFragment: Fragment() {
     ): View {
         val composeView = ComposeView(requireContext())
         composeView.setContent {
-            LoginScreen(loginViewModel::doLogin, ::goToRegister)
+            LoginScreen(
+                ::doLogin,
+                ::goToRegister)
         }
         return composeView
     }
 
     private fun goToRegister(){
         (activity as LoginActivity).navigate(R.id.nav_login_to_register)
+    }
+
+    private fun doLogin(
+        email: String,
+        password:String
+    ){
+        loginViewModel.doLogin(
+            email, password,
+            {
+
+            },
+            {
+
+            },
+            {
+
+            }
+        )
     }
 }

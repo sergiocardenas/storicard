@@ -14,7 +14,9 @@ import com.sc.card.presenter.extension.validateEmail
 import com.sc.card.presenter.screen.RegisterScreen
 import com.sc.card.presenter.state.UserState
 import com.sc.card.presenter.viewModel.RegisterViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegisterFragment: Fragment() {
 
     private val registerViewModel by lazy {

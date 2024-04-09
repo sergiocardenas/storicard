@@ -19,3 +19,11 @@ fun String.validateEmail(): Boolean{
         return EMAIL_ADDRESS_PATTERN.matcher(this).matches();
     }
 }
+
+fun String.emailToKey(): String {
+    if(this.validateEmail()){
+        return this.replace('@', '-').replace('.', '-')
+    }else{
+        return this
+    }
+}
